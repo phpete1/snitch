@@ -1,0 +1,4 @@
+bins/*
+!bins/.gitkeep
+vendor
+.idea

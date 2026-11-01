@@ -1,0 +1,28 @@
+{
+    "name": "phpete1/snitch",
+    "description": "Scan your PHP project for leaked secrets with one command, powered by Betterleaks.",
+    "type": "library",
+    "require": {
+        "php": "^8.3",
+        "ext-openssl": "*",
+        "ext-phar": "*",
+        "ext-zlib": "*"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Phpete1\\Snitch\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Peter Stuart",
+            "email": "peter@phpete.com"
+        }
+    ],
+    "require-dev": {
+        "laravel/pint": "^1.32",
+        "phpstan/phpstan": "^2.3"
+    },
+    "bin": ["bin/snitch"]
+}

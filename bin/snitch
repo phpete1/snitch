@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+require $_composer_autoload_path ?? __DIR__.'/../vendor/autoload.php';
+
+use Phpete1\Snitch\BinaryResolver;
+use Phpete1\Snitch\Installer;
+
+try {
+    $resolver = new BinaryResolver;
+
+    if (! $resolver->canExecute()) {
+        fwrite(STDERR, "Downloading Betterleaks...\n");
+        (new Installer($resolver))->run();
+    }
+} catch (Throwable $exception) {
+    fwrite(STDERR, "snitch: {$exception->getMessage()}\n");
+    exit(2);
+}
+
+$command = escapeshellarg($resolver->executablePath).' dir -v';
+
+passthru(command: $command, result_code: $code);
+
+exit($code);
