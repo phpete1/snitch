@@ -58,8 +58,15 @@ Snitch currently uses Betterleaks 1.9.0. Support for choosing a version in your 
 
 ## Known limitations
 
-- The scan includes `vendor`, which can produce a lot of noise. Support for excluding paths is coming.
+- The scan includes `vendor`, which can produce a lot of noise. The planned `snitch init` command will let you exclude it.
 - The binary is stored inside `vendor`, so it is downloaded again after the package is updated or reinstalled. The first run also needs write access to `vendor`, which can fail in images where it is read-only.
+
+## Roadmap
+
+- **Choose your Betterleaks version:** set it in the `extra.snitch.version` key of your `composer.json`.
+- **Version picker:** a command to choose or type a Betterleaks version, which Snitch then saves to your `composer.json` for you (using `composer config extra.snitch.version <version>`).
+- **`snitch init`:** a command that adds a default Betterleaks config to your project, which skips `vendor` and other noisy paths, plus a `.betterleaksignore` file. Snitch only writes these files when you run it.
+- **GrumPHP task:** under consideration.
 
 ## Credits
 
