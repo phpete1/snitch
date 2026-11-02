@@ -6,6 +6,8 @@ final readonly class BinaryResolver
 {
     const string DEFAULT_VERSION = '1.9.0';
 
+    private const string RELEASE_URL = 'https://github.com/betterleaks/betterleaks/releases/download/';
+
     public string $archiveUrl;
 
     public string $archivedBinary;
@@ -22,8 +24,20 @@ final readonly class BinaryResolver
 
     public string $extractedBinaryPath;
 
-    public function __construct(?string $version = null, ?string $os = null, ?string $arch = null)
-    {
+    /**
+     * @param  string|null  $version  Betterleaks version to install
+     * @param  string|null  $os  operating system, defaults to the current one
+     * @param  string|null  $arch  architecture, defaults to the current one
+     * @param  string  $releaseBaseUrl  base URL of the release assets, used to fetch archives and checksums
+     * @param  string|null  $binsDirectory  directory the executable is stored in, defaults to the package's bins directory
+     */
+    public function __construct(
+        ?string $version = null,
+        ?string $os = null,
+        ?string $arch = null,
+        string $releaseBaseUrl = self::RELEASE_URL,
+        ?string $binsDirectory = null,
+    ) {
         $version = $version ?? self::DEFAULT_VERSION;
 
         $os = strtolower($os ?? PHP_OS_FAMILY);
@@ -43,8 +57,8 @@ final readonly class BinaryResolver
         $binaryExtension = $os === 'windows' ? '.exe' : '';
         $releaseName = "betterleaks_{$version}_{$os}_{$arch}";
         $binary = "{$releaseName}{$binaryExtension}";
-        $releaseUrl = "https://github.com/betterleaks/betterleaks/releases/download/v{$version}/";
-        $directory = __DIR__.'/../bins/';
+        $releaseUrl = "{$releaseBaseUrl}v{$version}/";
+        $directory = rtrim($binsDirectory ?? __DIR__.'/../bins/', '/').'/';
 
         $this->archiveName = $releaseName.$archiveType;
         $this->archiveUrl = "{$releaseUrl}{$this->archiveName}";
