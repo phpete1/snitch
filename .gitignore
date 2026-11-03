@@ -2,3 +2,4 @@ bins/*
 !bins/.gitkeep
 vendor
 .idea
+.phpunit.cache
