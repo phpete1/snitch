@@ -14,13 +14,8 @@
             "Phpete1\\Snitch\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Phpete1\\Snitch\\Tests\\": "tests/"
-        }
-    },
     "scripts": {
-        "test": "phpunit",
+        "test": "pest",
         "format": "pint",
         "lint": "pint --test",
         "analyse": "phpstan analyse"
@@ -34,8 +29,12 @@
     "require-dev": {
         "laravel/pint": "^1.32",
         "phpstan/phpstan": "^2.3",
-        "phpunit/phpunit": "^13.4",
-        "phpstan/phpstan-phpunit": "^2.1"
+        "pestphp/pest": "^5.3"
     },
-    "bin": ["bin/snitch"]
+    "bin": ["bin/snitch"],
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }

@@ -2,138 +2,104 @@
 
 declare(strict_types=1);
 
-namespace Phpete1\Snitch\Tests;
-
 use Phpete1\Snitch\BinaryResolver;
-use PHPUnit\Framework\TestCase;
 
-final class BinaryResolverTest extends TestCase
-{
-    public function test_it_resolves_every_supported_platform(): void
-    {
-        $resolver = new BinaryResolver(version: '9.9.9', os: 'darwin', arch: 'arm64');
+test('it resolves the release for a platform', function () {
+    $resolver = new BinaryResolver(version: '9.9.9', os: 'darwin', arch: 'arm64');
 
-        $this->assertSame('betterleaks_9.9.9_darwin_arm64.tar.gz', $resolver->archiveName);
-        $this->assertSame('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/betterleaks_9.9.9_darwin_arm64.tar.gz', $resolver->archiveUrl);
-        $this->assertSame('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/checksums.txt', $resolver->checksumsUrl);
-        $this->assertSame('betterleaks', $resolver->archivedBinary);
-        $this->assertSame(dirname(__DIR__).'/src/../bins/betterleaks_9.9.9_darwin_arm64', $resolver->executablePath);
-        $this->assertSame($resolver->archiveDirectory.'/'.$resolver->archiveName, $resolver->archivePath);
-        $this->assertSame($resolver->archiveDirectory.'/'.$resolver->archivedBinary, $resolver->extractedBinaryPath);
-        $this->assertStringStartsWith(sys_get_temp_dir().'/', $resolver->archiveDirectory);
-    }
+    expect($resolver->archiveName)->toBe('betterleaks_9.9.9_darwin_arm64.tar.gz')
+        ->and($resolver->archiveUrl)->toBe('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/betterleaks_9.9.9_darwin_arm64.tar.gz')
+        ->and($resolver->checksumsUrl)->toBe('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/checksums.txt')
+        ->and($resolver->archivedBinary)->toBe('betterleaks')
+        ->and($resolver->executablePath)->toBe(dirname(__DIR__).'/src/../bins/betterleaks_9.9.9_darwin_arm64')
+        ->and($resolver->archivePath)->toBe($resolver->archiveDirectory.'/'.$resolver->archiveName)
+        ->and($resolver->extractedBinaryPath)->toBe($resolver->archiveDirectory.'/'.$resolver->archivedBinary)
+        ->and($resolver->archiveDirectory)->toStartWith(sys_get_temp_dir().'/');
+});
 
-    public function test_it_resolves_windows_releases_from_zip_archives(): void
-    {
-        $resolver = new BinaryResolver(version: '9.9.9', os: 'windows', arch: 'amd64');
+test('it resolves windows releases from zip archives', function () {
+    $resolver = new BinaryResolver(version: '9.9.9', os: 'windows', arch: 'amd64');
 
-        $this->assertSame('betterleaks_9.9.9_windows_x64.zip', $resolver->archiveName);
-        $this->assertSame('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/betterleaks_9.9.9_windows_x64.zip', $resolver->archiveUrl);
-        $this->assertSame('betterleaks.exe', $resolver->archivedBinary);
-        $this->assertSame(dirname(__DIR__).'/src/../bins/betterleaks_9.9.9_windows_x64.exe', $resolver->executablePath);
-    }
+    expect($resolver->archiveName)->toBe('betterleaks_9.9.9_windows_x64.zip')
+        ->and($resolver->archiveUrl)->toBe('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/betterleaks_9.9.9_windows_x64.zip')
+        ->and($resolver->archivedBinary)->toBe('betterleaks.exe')
+        ->and($resolver->executablePath)->toBe(dirname(__DIR__).'/src/../bins/betterleaks_9.9.9_windows_x64.exe');
+});
 
-    public function test_it_normalises_os_and_arch_aliases(): void
-    {
-        $resolver = new BinaryResolver(os: 'Darwin', arch: 'AARCH64');
+test('it normalises os and arch casing', function () {
+    $resolver = new BinaryResolver(os: 'Darwin', arch: 'AARCH64');
 
-        $this->assertSame('betterleaks_1.9.0_darwin_arm64.tar.gz', $resolver->archiveName);
-    }
+    expect($resolver->archiveName)->toBe('betterleaks_1.9.0_darwin_arm64.tar.gz');
+});
 
-    public function test_it_accepts_x86_64_and_amd64_for_x64(): void
-    {
-        foreach (['x86_64', 'AMD64'] as $arch) {
-            $resolver = new BinaryResolver(arch: $arch);
+test('it maps x64 aliases', function (string $arch) {
+    $resolver = new BinaryResolver(arch: $arch);
 
-            $this->assertStringEndsWith('_x64.tar.gz', $resolver->archiveName);
-        }
-    }
+    expect($resolver->archiveName)->toEndWith('_x64.tar.gz');
+})->with(['x86_64', 'AMD64']);
 
-    public function test_it_defaults_to_the_current_platform_and_version(): void
-    {
-        $default = new BinaryResolver;
-        $explicit = new BinaryResolver(
-            version: BinaryResolver::DEFAULT_VERSION,
-            os: strtolower(PHP_OS_FAMILY),
-            arch: strtolower(php_uname('m')),
-        );
+test('it defaults to the current platform', function () {
+    $default = new BinaryResolver;
+    $explicit = new BinaryResolver(
+        version: BinaryResolver::DEFAULT_VERSION,
+        os: strtolower(PHP_OS_FAMILY),
+        arch: strtolower(php_uname('m')),
+    );
 
-        $this->assertSame($explicit->archiveUrl, $default->archiveUrl);
-        $this->assertSame($explicit->checksumsUrl, $default->checksumsUrl);
-        $this->assertSame($explicit->executablePath, $default->executablePath);
-        $this->assertSame($explicit->archivedBinary, $default->archivedBinary);
-    }
+    expect($default->archiveUrl)->toBe($explicit->archiveUrl)
+        ->and($default->checksumsUrl)->toBe($explicit->checksumsUrl)
+        ->and($default->executablePath)->toBe($explicit->executablePath)
+        ->and($default->archivedBinary)->toBe($explicit->archivedBinary);
+});
 
-    public function test_it_uses_the_default_version_when_none_is_given(): void
-    {
-        $resolver = new BinaryResolver;
+test('it uses the default version when none is given', function () {
+    $resolver = new BinaryResolver;
 
-        $this->assertStringContainsString('v'.BinaryResolver::DEFAULT_VERSION.'/', $resolver->archiveUrl);
-    }
+    expect($resolver->archiveUrl)->toContain('v'.BinaryResolver::DEFAULT_VERSION.'/');
+});
 
-    public function test_it_rejects_unsupported_operating_systems(): void
-    {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Unsupported OS Family: freebsd');
+test('it rejects unsupported operating systems', function () {
+    new BinaryResolver(os: 'freebsd');
+})->throws(RuntimeException::class, 'Unsupported OS Family: freebsd');
 
-        new BinaryResolver(os: 'freebsd');
-    }
+test('it rejects unsupported architectures', function () {
+    new BinaryResolver(arch: 'riscv');
+})->throws(RuntimeException::class, 'Unsupported architecture: riscv');
 
-    public function test_it_rejects_unsupported_architectures(): void
-    {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Unsupported architecture: riscv');
+test('it uses a custom release url and bins directory', function () {
+    $bins = temporaryDirectory('snitch-bins');
 
-        new BinaryResolver(arch: 'riscv');
-    }
+    $resolver = new BinaryResolver(
+        version: '9.9.9',
+        os: 'linux',
+        arch: 'amd64',
+        releaseBaseUrl: 'https://example.com/releases/',
+        binsDirectory: $bins,
+    );
 
-    public function test_it_uses_a_custom_release_url_and_bins_directory(): void
-    {
-        $bins = sys_get_temp_dir().'/snitch-bins-'.bin2hex(random_bytes(4));
+    expect($resolver->archiveUrl)->toBe('https://example.com/releases/v9.9.9/betterleaks_9.9.9_linux_x64.tar.gz')
+        ->and($resolver->checksumsUrl)->toBe('https://example.com/releases/v9.9.9/checksums.txt')
+        ->and($resolver->executablePath)->toBe($bins.'/betterleaks_9.9.9_linux_x64');
+});
 
-        $resolver = new BinaryResolver(
-            version: '9.9.9',
-            os: 'linux',
-            arch: 'amd64',
-            releaseBaseUrl: 'https://example.com/releases/',
-            binsDirectory: $bins,
-        );
+test('it cannot execute a missing binary', function () {
+    $resolver = new BinaryResolver(version: '9.9.9', binsDirectory: temporaryDirectory('snitch-bins'));
 
-        $this->assertSame('https://example.com/releases/v9.9.9/betterleaks_9.9.9_linux_x64.tar.gz', $resolver->archiveUrl);
-        $this->assertSame('https://example.com/releases/v9.9.9/checksums.txt', $resolver->checksumsUrl);
-        $this->assertSame($bins.'/betterleaks_9.9.9_linux_x64', $resolver->executablePath);
-    }
+    expect($resolver->canExecute())->toBeFalse();
+});
 
-    public function test_can_execute_is_false_when_the_binary_is_missing(): void
-    {
-        $resolver = $this->resolverWithBinsDirectory();
+test('it cannot execute a binary without the executable bit', function () {
+    $resolver = new BinaryResolver(version: '9.9.9', binsDirectory: temporaryDirectory('snitch-bins'));
+    file_put_contents($resolver->executablePath, 'binary');
+    chmod($resolver->executablePath, 0644);
 
-        $this->assertFalse($resolver->canExecute());
-    }
+    expect($resolver->canExecute())->toBeFalse();
+});
 
-    public function test_can_execute_is_false_when_the_binary_is_not_executable(): void
-    {
-        $resolver = $this->resolverWithBinsDirectory();
-        file_put_contents($resolver->executablePath, 'binary');
-        chmod($resolver->executablePath, 0644);
+test('it can execute an executable binary', function () {
+    $resolver = new BinaryResolver(version: '9.9.9', binsDirectory: temporaryDirectory('snitch-bins'));
+    file_put_contents($resolver->executablePath, 'binary');
+    chmod($resolver->executablePath, 0755);
 
-        $this->assertFalse($resolver->canExecute());
-    }
-
-    public function test_can_execute_is_true_when_the_binary_is_executable(): void
-    {
-        $resolver = $this->resolverWithBinsDirectory();
-        file_put_contents($resolver->executablePath, 'binary');
-        chmod($resolver->executablePath, 0755);
-
-        $this->assertTrue($resolver->canExecute());
-    }
-
-    private function resolverWithBinsDirectory(): BinaryResolver
-    {
-        $bins = sys_get_temp_dir().'/snitch-bins-'.bin2hex(random_bytes(4));
-        @mkdir($bins);
-
-        return new BinaryResolver(version: '9.9.9', binsDirectory: $bins);
-    }
-}
+    expect($resolver->canExecute())->toBeTrue();
+});
