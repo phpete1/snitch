@@ -16,7 +16,10 @@ All of these are enabled by default in most PHP builds.
 
 ```bash
 composer require --dev phpete1/snitch
+vendor/bin/snitch init
 ```
+
+The second command is recommended: it creates a default Betterleaks config (`.betterleaks.toml`) and an empty `.betterleaksignore` file so common noisy directories are skipped.
 
 ## Usage
 
@@ -81,7 +84,6 @@ Snitch currently uses Betterleaks 1.9.0 by default. You can pin a different vers
 
 ## Known limitations
 
-- The scan includes `vendor`, which can produce a lot of noise. Run `snitch init` to create a Betterleaks config that skips it.
 - The binary is stored inside `vendor`, so it is downloaded again after the package is updated or reinstalled. The first run also needs write access to `vendor`, which can fail in images where it is read-only.
 
 ## Roadmap
