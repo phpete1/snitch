@@ -63,6 +63,8 @@ Snitch currently uses Betterleaks 1.9.0. Support for choosing a version in your 
 
 ## Roadmap
 
+- **Tests:** unit tests for `BinaryResolver` and `Installer`, written with Pest.
+- **GitHub Actions CI:** run `grumphp run` (Pest, PHPStan and Pint) on macOS, Linux and Windows.
 - **Choose your Betterleaks version:** set it in the `extra.snitch.version` key of your `composer.json`.
 - **Version picker:** a command to choose or type a Betterleaks version, which Snitch then saves to your `composer.json` for you (using `composer config extra.snitch.version <version>`).
 - **`snitch init`:** a command that adds a default Betterleaks config to your project, which skips `vendor` and other noisy paths, plus a `.betterleaksignore` file. Snitch only writes these files when you run it.
