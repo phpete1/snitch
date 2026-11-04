@@ -15,7 +15,7 @@ try {
         $directory = getcwd() ?: dirname(__DIR__);
 
         $files = [
-            '.betterleaks.toml' => "[extend]\nuseDefault = true\n\n[allowlist]\npaths = [\n  '''vendor/''',\n  '''node_modules/''',\n  '''.git/''',\n  '''dist/''',\n  '''build/''',\n  '''.next/''',\n  '''.nuxt/''',\n  '''coverage/''',\n  '''storage/''',\n  '''.venv/''',\n  '''venv/''',\n  '''env/''',\n  '''__pycache__/''',\n  '''.cache/''',\n]\n",
+            '.betterleaks.toml' => "[extend]\nuseDefault = true\n\n[allowlist]\npaths = [\n  '''vendor/''',\n  '''node_modules/''',\n  '''.git/''',\n  '''dist/''',\n  '''build/''',\n  '''.next/''',\n  '''.nuxt/''',\n  '''coverage/''',\n  '''storage/''',\n  '''.venv/''',\n  '''venv/''',\n  '''env/''',\n  '''__pycache__/''',\n  '''.cache/''',\n  '''(?:^|/)\\.env$''',\n]\n",
             '.betterleaksignore' => '',
         ];
 
