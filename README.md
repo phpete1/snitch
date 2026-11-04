@@ -86,13 +86,11 @@ Snitch currently uses Betterleaks 1.9.0 by default. You can pin a different vers
 
 - The binary is stored inside `vendor`, so it is downloaded again after the package is updated or reinstalled. The first run also needs write access to `vendor`, which can fail in images where it is read-only.
 
-## Roadmap
-
-- **GitHub Actions CI:** run `grumphp run` (Pest, PHPStan and Pint) on macOS, Linux and Windows.
-- **Version picker:** a command to choose or type a Betterleaks version, which Snitch then saves to your `composer.json` for you (using `composer config extra.snitch.version <version>`).
-- **GrumPHP task:** under consideration.
-
 ## Changelog
+
+### 1.2.1
+
+- Run Pint in CI alongside Pest and PHPStan.
 
 ### 1.2.0
 

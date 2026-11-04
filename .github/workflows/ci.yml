@@ -37,3 +37,6 @@ jobs:
 
       - name: Run PHPStan
         run: composer analyse
+
+      - name: Run Pint
+        run: composer lint
