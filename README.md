@@ -16,7 +16,10 @@ All of these are enabled by default in most PHP builds.
 
 ```bash
 composer require --dev phpete1/snitch
+vendor/bin/snitch init
 ```
+
+The second command is recommended: it creates a default Betterleaks config (`.betterleaks.toml`) and an empty `.betterleaksignore` file so common noisy directories are skipped.
 
 ## Usage
 
@@ -27,6 +30,19 @@ vendor/bin/snitch
 ```
 
 Snitch scans the current directory and reports every finding with its file and line.
+
+### `snitch init`
+
+Create a default Betterleaks config (`.betterleaks.toml`) and an empty `.betterleaksignore` file in the current project:
+
+```bash
+vendor/bin/snitch init
+```
+
+The generated config extends Betterleaks' built-in rules and skips common noisy
+directories such as `vendor`, `node_modules`, `.git`, `dist`, `build`, and
+others. Snitch only writes these files when you run this command; running a
+scan never creates them automatically.
 
 ### Exit codes
 
@@ -68,15 +84,33 @@ Snitch currently uses Betterleaks 1.9.0 by default. You can pin a different vers
 
 ## Known limitations
 
-- The scan includes `vendor`, which can produce a lot of noise. The planned `snitch init` command will let you exclude it.
 - The binary is stored inside `vendor`, so it is downloaded again after the package is updated or reinstalled. The first run also needs write access to `vendor`, which can fail in images where it is read-only.
 
 ## Roadmap
 
 - **GitHub Actions CI:** run `grumphp run` (Pest, PHPStan and Pint) on macOS, Linux and Windows.
 - **Version picker:** a command to choose or type a Betterleaks version, which Snitch then saves to your `composer.json` for you (using `composer config extra.snitch.version <version>`).
-- **`snitch init`:** a command that adds a default Betterleaks config to your project, which skips `vendor` and other noisy paths, plus a `.betterleaksignore` file. Snitch only writes these files when you run it.
 - **GrumPHP task:** under consideration.
+
+## Changelog
+
+### 1.2.0
+
+- Added `snitch init`, which creates a default `.betterleaks.toml` (extending Betterleaks' defaults and skipping common noisy directories) and an empty `.betterleaksignore` file.
+- Expanded the default ignored directories in the generated config (including `vendor`, `node_modules`, `.git`, `dist`, `build`, and others).
+- Ignore only the exact `.env` file by default, while still scanning `.env.*` variants.
+
+### 1.1.0
+
+- Support choosing the Betterleaks version via `composer.json` (`extra.snitch.version`).
+
+### 1.0.1
+
+- Minor fixes and improvements.
+
+### 1.0.0
+
+- Initial release.
 
 ## Credits
 

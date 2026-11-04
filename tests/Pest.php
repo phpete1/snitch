@@ -38,7 +38,11 @@ function removeDirectory(string $directory): void
 
     chmod($directory, 0755);
 
-    foreach (glob($directory.'/*') ?: [] as $file) {
+    foreach (glob($directory.'/{,.}*', GLOB_BRACE) ?: [] as $file) {
+        if (basename($file) === '.' || basename($file) === '..') {
+            continue;
+        }
+
         is_dir($file) ? removeDirectory($file) : unlink($file);
     }
 

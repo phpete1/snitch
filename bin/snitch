@@ -6,7 +6,40 @@ require $_composer_autoload_path ?? __DIR__.'/../vendor/autoload.php';
 use Phpete1\Snitch\BinaryResolver;
 use Phpete1\Snitch\Installer;
 
+$serverArgv = $_SERVER['argv'] ?? [];
+
+$arguments = is_array($serverArgv) ? array_slice($serverArgv, 1) : [];
+
 try {
+    if (($arguments[0] ?? null) === 'init') {
+        $directory = getcwd() ?: dirname(__DIR__);
+        $stubsDirectory = dirname(__DIR__).'/stubs';
+
+        $files = [
+            'betterleaks.toml' => '.betterleaks.toml',
+            'betterleaksignore' => '.betterleaksignore',
+        ];
+
+        foreach ($files as $source => $target) {
+            $sourcePath = $stubsDirectory.'/'.$source;
+            $targetPath = $directory.'/'.$target;
+
+            if (is_file($targetPath)) {
+                fwrite(STDERR, "snitch: {$target} already exists, skipping\n");
+
+                continue;
+            }
+
+            if (! is_file($sourcePath) || ! copy($sourcePath, $targetPath)) {
+                throw new RuntimeException("Failed to copy {$target}");
+            }
+        }
+
+        fwrite(STDOUT, "Created .betterleaks.toml and .betterleaksignore\n");
+
+        exit(0);
+    }
+
     /** @var array{extra?: array{snitch?: array{version?: mixed}}} $data */
     $data = json_decode((string) @file_get_contents('composer.json'), true);
 
