@@ -23,7 +23,7 @@ test('it reads the Betterleaks version from composer.json and reports a missing 
     );
 
     if (! is_resource($process)) {
-        throw new \RuntimeException('Failed to start process');
+        throw new RuntimeException('Failed to start process');
     }
 
     $stdout = stream_get_contents($pipes[1]);
