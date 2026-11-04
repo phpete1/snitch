@@ -27,7 +27,7 @@ final readonly class Installer
 
     private function download(): void
     {
-        if (! copy(from: $this->resolver->archiveUrl, to: $this->resolver->archivePath)) {
+        if (! @copy(from: $this->resolver->archiveUrl, to: $this->resolver->archivePath)) {
             throw new \RuntimeException("Download failed: {$this->resolver->archivePath}");
         }
     }
@@ -71,7 +71,7 @@ final readonly class Installer
 
     private function verify(): void
     {
-        $file = file_get_contents($this->resolver->checksumsUrl);
+        $file = @file_get_contents($this->resolver->checksumsUrl);
 
         if ($file === false) {
             throw new \RuntimeException("ChecksumsUrl failed: {$this->resolver->checksumsUrl}");

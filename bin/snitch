@@ -7,7 +7,13 @@ use Phpete1\Snitch\BinaryResolver;
 use Phpete1\Snitch\Installer;
 
 try {
-    $resolver = new BinaryResolver;
+    /** @var array{extra?: array{snitch?: array{version?: mixed}}} $data */
+    $data = json_decode((string) @file_get_contents('composer.json'), true);
+
+    $version = $data['extra']['snitch']['version'] ?? null;
+    $version = is_string($version) ? $version : null;
+
+    $resolver = new BinaryResolver(version: $version);
 
     if (! $resolver->canExecute()) {
         fwrite(STDERR, "Downloading Betterleaks...\n");
