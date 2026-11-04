@@ -10,11 +10,10 @@ try {
     $contents = @file_get_contents('composer.json');
     $data = is_string($contents) ? json_decode($contents, true) : null;
 
-    $version = is_array($data)
-        && is_array($data['extra'] ?? null)
-        && is_array($data['extra']['snitch'] ?? null)
-        && is_string($data['extra']['snitch']['version'] ?? null)
-        ? $data['extra']['snitch']['version']
+    $extra = is_array($data) ? ($data['extra'] ?? null) : null;
+    $snitch = is_array($extra) ? ($extra['snitch'] ?? null) : null;
+    $version = is_array($snitch) && is_string($snitch['version'] ?? null)
+        ? $snitch['version']
         : null;
 
     $resolver = new BinaryResolver(version: $version);
