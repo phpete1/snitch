@@ -13,7 +13,7 @@ test('it installs the binary and cleans up', function () {
         ->and(file_get_contents($resolver->executablePath))->toBe(BINARY_CONTENT)
         ->and(fileperms($resolver->executablePath) & 0777)->toBe(0755)
         ->and($resolver->archiveDirectory)->not->toBeDirectory();
-});
+})->skipOnWindows();
 
 test('it installs windows binaries from zip archives', function () {
     $resolver = fakeRelease(os: 'windows', arch: 'amd64');
@@ -35,7 +35,7 @@ test('it fails when the binary cannot be moved into the bins directory', functio
     expect(fn () => (new Installer($resolver))->run())
         ->toThrow(RuntimeException::class, "Failed to move binary from {$resolver->extractedBinaryPath} to {$resolver->executablePath}")
         ->and($resolver->archiveDirectory)->not->toBeDirectory();
-});
+})->skipOnWindows();
 
 test('it fails when the archive cannot be downloaded', function () {
     $resolver = fakeRelease();

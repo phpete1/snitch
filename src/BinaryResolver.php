@@ -58,7 +58,8 @@ final readonly class BinaryResolver
         $releaseName = "betterleaks_{$version}_{$os}_{$arch}";
         $binary = "{$releaseName}{$binaryExtension}";
         $releaseUrl = "{$releaseBaseUrl}v{$version}/";
-        $directory = rtrim($binsDirectory ?? __DIR__.'/../bins/', '/').'/';
+        $baseDirectory = str_replace('\\', '/', __DIR__);
+        $directory = rtrim($binsDirectory ?? $baseDirectory.'/../bins/', '/').'/';
 
         $this->archiveName = $releaseName.$archiveType;
         $this->archiveUrl = "{$releaseUrl}{$this->archiveName}";

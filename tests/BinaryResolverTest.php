@@ -11,7 +11,7 @@ test('it resolves the release for a platform', function () {
         ->and($resolver->archiveUrl)->toBe('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/betterleaks_9.9.9_darwin_arm64.tar.gz')
         ->and($resolver->checksumsUrl)->toBe('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/checksums.txt')
         ->and($resolver->archivedBinary)->toBe('betterleaks')
-        ->and($resolver->executablePath)->toBe(dirname(__DIR__).'/src/../bins/betterleaks_9.9.9_darwin_arm64')
+        ->and($resolver->executablePath)->toBe(packageRoot().'/src/../bins/betterleaks_9.9.9_darwin_arm64')
         ->and($resolver->archivePath)->toBe($resolver->archiveDirectory.'/'.$resolver->archiveName)
         ->and($resolver->extractedBinaryPath)->toBe($resolver->archiveDirectory.'/'.$resolver->archivedBinary)
         ->and($resolver->archiveDirectory)->toStartWith(sys_get_temp_dir().'/');
@@ -23,7 +23,7 @@ test('it resolves windows releases from zip archives', function () {
     expect($resolver->archiveName)->toBe('betterleaks_9.9.9_windows_x64.zip')
         ->and($resolver->archiveUrl)->toBe('https://github.com/betterleaks/betterleaks/releases/download/v9.9.9/betterleaks_9.9.9_windows_x64.zip')
         ->and($resolver->archivedBinary)->toBe('betterleaks.exe')
-        ->and($resolver->executablePath)->toBe(dirname(__DIR__).'/src/../bins/betterleaks_9.9.9_windows_x64.exe');
+        ->and($resolver->executablePath)->toBe(packageRoot().'/src/../bins/betterleaks_9.9.9_windows_x64.exe');
 });
 
 test('it normalises os and arch casing', function () {
@@ -33,7 +33,7 @@ test('it normalises os and arch casing', function () {
 });
 
 test('it maps x64 aliases', function (string $arch) {
-    $resolver = new BinaryResolver(arch: $arch);
+    $resolver = new BinaryResolver(os: 'linux', arch: $arch);
 
     expect($resolver->archiveName)->toEndWith('_x64.tar.gz');
 })->with(['x86_64', 'AMD64']);
@@ -94,7 +94,7 @@ test('it cannot execute a binary without the executable bit', function () {
     chmod($resolver->executablePath, 0644);
 
     expect($resolver->canExecute())->toBeFalse();
-});
+})->skipOnWindows();
 
 test('it can execute an executable binary', function () {
     $resolver = new BinaryResolver(version: '9.9.9', binsDirectory: temporaryDirectory('snitch-bins'));
