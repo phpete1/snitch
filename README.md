@@ -28,6 +28,19 @@ vendor/bin/snitch
 
 Snitch scans the current directory and reports every finding with its file and line.
 
+### `snitch init`
+
+Create a default Betterleaks config (`.betterleaks.toml`) and an empty `.betterleaksignore` file in the current project:
+
+```bash
+vendor/bin/snitch init
+```
+
+The generated config extends Betterleaks' built-in rules and skips common noisy
+directories such as `vendor`, `node_modules`, `.git`, `dist`, `build`, and
+others. Snitch only writes these files when you run this command; running a
+scan never creates them automatically.
+
 ### Exit codes
 
 - `0` means no leaks were found
@@ -76,6 +89,25 @@ Snitch currently uses Betterleaks 1.9.0 by default. You can pin a different vers
 - **GitHub Actions CI:** run `grumphp run` (Pest, PHPStan and Pint) on macOS, Linux and Windows.
 - **Version picker:** a command to choose or type a Betterleaks version, which Snitch then saves to your `composer.json` for you (using `composer config extra.snitch.version <version>`).
 - **GrumPHP task:** under consideration.
+
+## Changelog
+
+### Unreleased
+
+- Added `snitch init`, which creates a default `.betterleaks.toml` (extending Betterleaks' defaults and skipping common noisy directories) and an empty `.betterleaksignore` file.
+- Expanded the default ignored directories in the generated config.
+
+### 1.1.0
+
+- Support choosing the Betterleaks version via `composer.json` (`extra.snitch.version`).
+
+### 1.0.1
+
+- Minor fixes and improvements.
+
+### 1.0.0
+
+- Initial release.
 
 ## Credits
 
