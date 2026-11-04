@@ -91,6 +91,11 @@ function writeChecksums(BinaryResolver $resolver, string $checksum, ?string $arc
     );
 }
 
+function packageRoot(): string
+{
+    return str_replace('\\', '/', dirname(__DIR__));
+}
+
 function sha256(string $path): string
 {
     return hash_file('sha256', $path) ?: throw new RuntimeException("Unable to hash {$path}");
