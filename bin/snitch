@@ -13,23 +13,25 @@ $arguments = is_array($serverArgv) ? array_slice($serverArgv, 1) : [];
 try {
     if (($arguments[0] ?? null) === 'init') {
         $directory = getcwd() ?: dirname(__DIR__);
+        $stubsDirectory = dirname(__DIR__).'/stubs';
 
         $files = [
-            '.betterleaks.toml' => "[extend]\nuseDefault = true\n\n[allowlist]\npaths = [\n  '''vendor/''',\n  '''node_modules/''',\n  '''.git/''',\n  '''dist/''',\n  '''build/''',\n  '''.next/''',\n  '''.nuxt/''',\n  '''coverage/''',\n  '''storage/''',\n  '''.venv/''',\n  '''venv/''',\n  '''env/''',\n  '''__pycache__/''',\n  '''.cache/''',\n  '''(?:^|/)\\.env$''',\n]\n",
-            '.betterleaksignore' => '',
+            'betterleaks.toml' => '.betterleaks.toml',
+            'betterleaksignore' => '.betterleaksignore',
         ];
 
-        foreach ($files as $name => $contents) {
-            $path = $directory.'/'.$name;
+        foreach ($files as $source => $target) {
+            $sourcePath = $stubsDirectory.'/'.$source;
+            $targetPath = $directory.'/'.$target;
 
-            if (is_file($path)) {
-                fwrite(STDERR, "snitch: {$name} already exists, skipping\n");
+            if (is_file($targetPath)) {
+                fwrite(STDERR, "snitch: {$target} already exists, skipping\n");
 
                 continue;
             }
 
-            if (file_put_contents($path, $contents) === false) {
-                throw new RuntimeException("Failed to write {$name}");
+            if (! is_file($sourcePath) || ! copy($sourcePath, $targetPath)) {
+                throw new RuntimeException("Failed to copy {$target}");
             }
         }
 

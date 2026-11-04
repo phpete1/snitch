@@ -1,0 +1,21 @@
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  '''vendor/''',
+  '''node_modules/''',
+  '''.git/''',
+  '''dist/''',
+  '''build/''',
+  '''.next/''',
+  '''.nuxt/''',
+  '''coverage/''',
+  '''storage/''',
+  '''.venv/''',
+  '''venv/''',
+  '''env/''',
+  '''__pycache__/''',
+  '''.cache/''',
+  '''(?:^|/)\.env$''',
+]
