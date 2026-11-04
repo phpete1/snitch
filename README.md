@@ -92,10 +92,11 @@ Snitch currently uses Betterleaks 1.9.0 by default. You can pin a different vers
 
 ## Changelog
 
-### Unreleased
+### 1.2.0
 
 - Added `snitch init`, which creates a default `.betterleaks.toml` (extending Betterleaks' defaults and skipping common noisy directories) and an empty `.betterleaksignore` file.
-- Expanded the default ignored directories in the generated config.
+- Expanded the default ignored directories in the generated config (including `vendor`, `node_modules`, `.git`, `dist`, `build`, and others).
+- Ignore only the exact `.env` file by default, while still scanning `.env.*` variants.
 
 ### 1.1.0
 
