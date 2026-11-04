@@ -7,20 +7,15 @@ use Phpete1\Snitch\BinaryResolver;
 use Phpete1\Snitch\Installer;
 
 try {
-    $version = null;
-
     $contents = @file_get_contents('composer.json');
+    $data = is_string($contents) ? json_decode($contents, true) : null;
 
-    if (is_string($contents)) {
-        $data = json_decode($contents, true);
-
-        if (is_array($data)) {
-            $extra = $data['extra'] ?? null;
-            $snitch = is_array($extra) ? ($extra['snitch'] ?? null) : null;
-            $candidate = is_array($snitch) ? ($snitch['version'] ?? null) : null;
-            $version = is_string($candidate) ? $candidate : null;
-        }
-    }
+    $version = is_array($data)
+        && is_array($data['extra'] ?? null)
+        && is_array($data['extra']['snitch'] ?? null)
+        && is_string($data['extra']['snitch']['version'] ?? null)
+        ? $data['extra']['snitch']['version']
+        : null;
 
     $resolver = new BinaryResolver(version: $version);
 
