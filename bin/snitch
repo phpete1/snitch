@@ -7,7 +7,30 @@ use Phpete1\Snitch\BinaryResolver;
 use Phpete1\Snitch\Installer;
 
 try {
-    $resolver = new BinaryResolver;
+    $projectRoot = isset($_composer_autoload_path) && is_string($_composer_autoload_path)
+        ? dirname(dirname($_composer_autoload_path))
+        : getcwd();
+
+    $version = null;
+
+    $composerFile = is_string($projectRoot) ? $projectRoot.'/composer.json' : null;
+
+    if (is_string($composerFile) && is_file($composerFile)) {
+        $contents = file_get_contents($composerFile);
+
+        if (is_string($contents)) {
+            $data = json_decode($contents, true);
+
+            if (is_array($data) && isset($data['extra']) && is_array($data['extra'])
+                && isset($data['extra']['snitch']) && is_array($data['extra']['snitch'])
+                && isset($data['extra']['snitch']['version'])
+                && is_string($data['extra']['snitch']['version'])) {
+                $version = $data['extra']['snitch']['version'];
+            }
+        }
+    }
+
+    $resolver = new BinaryResolver(version: $version);
 
     if (! $resolver->canExecute()) {
         fwrite(STDERR, "Downloading Betterleaks...\n");
