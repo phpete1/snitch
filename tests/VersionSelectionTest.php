@@ -9,11 +9,26 @@ test('it reads the Betterleaks version from composer.json and reports a missing 
         json_encode(['extra' => ['snitch' => ['version' => '0.0.0-does-not-exist']]]),
     );
 
-    $command = 'cd '.escapeshellarg($project)
-        .' && '.escapeshellarg(PHP_BINARY).' '.escapeshellarg(dirname(__DIR__).'/bin/snitch').' 2>&1';
+    $descriptors = [
+        0 => ['pipe', 'r'],
+        1 => ['pipe', 'w'],
+        2 => ['pipe', 'w'],
+    ];
 
-    exec($command, $output, $exitCode);
+    $process = proc_open(
+        escapeshellarg(PHP_BINARY).' '.escapeshellarg(dirname(__DIR__).'/bin/snitch'),
+        $descriptors,
+        $pipes,
+        $project,
+    );
+
+    $stdout = stream_get_contents($pipes[1]);
+    $stderr = stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+
+    $exitCode = proc_close($process);
 
     expect($exitCode)->toBe(2)
-        ->and(implode("\n", $output))->toContain('Download failed');
+        ->and($stdout.$stderr)->toContain('Download failed');
 });
